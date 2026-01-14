@@ -4,6 +4,8 @@
  */
 package controller;
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Queue;
 import model.GameCharacter;
 import javax.swing.JOptionPane;
 /**
@@ -12,38 +14,65 @@ import javax.swing.JOptionPane;
  */
     
 public class CharacterControl {
-
-    private ArrayList<GameCharacter> characters;
-
-    public CharacterControl(ArrayList<GameCharacter> characters) {
-        this.characters = characters;
+    
+    private Queue<GameCharacter> characterQueue;
+    public CharacterControl() {
+        characterQueue = new LinkedList<>();
         preloadCharacters();
     }
 
+    
     private void preloadCharacters() {
-        characters.add(new GameCharacter("Dokja"));
-        characters.add(new GameCharacter("Joonghyuk"));
-        characters.add(new GameCharacter("Sooyoung"));
+        characterQueue.offer(new GameCharacter("Kim Dokja"));
+        characterQueue.offer(new GameCharacter("Yoo Joonghyuk"));
+        characterQueue.offer(new GameCharacter("Han Sooyoung"));
     }
 
-    public void addCharacter(String name) {
-        addCharacter(name, "Warrior"); 
-    }
     
     public void addCharacter(String name, String clazz) {
         GameCharacter character = new GameCharacter(name);
         character.setClazz(clazz);
-        characters.add(character);
+        characterQueue.offer(character);
     }
 
-    public ArrayList<GameCharacter> getCharacters() {
-        return characters;
-    }
     
     public void deleteCharacter(int index) {
-        if (index >= 0 && index < characters.size()) {
-            characters.remove(index);
+        if (index < 0 || index >= characterQueue.size()) return;
+
+        Queue<GameCharacter> temp = new LinkedList<>();
+        int i = 0;
+
+        while (!characterQueue.isEmpty()) {
+            GameCharacter c = characterQueue.poll();
+            if (i != index) {
+                temp.offer(c);
+            }
+            i++;
         }
+
+        characterQueue = temp;
+    }
+
+    public void sortByLevel() {
+        GameCharacter[] arr = characterQueue.toArray(new GameCharacter[0]);
+
+        for (int i = 0; i < arr.length - 1; i++) {
+            for (int j = 0; j < arr.length - i - 1; j++) {
+                if (arr[j].getLevel() > arr[j + 1].getLevel()) {
+                    GameCharacter temp = arr[j];
+                    arr[j] = arr[j + 1];
+                    arr[j + 1] = temp;
+                }
+            }
+        }
+
+        characterQueue.clear();
+        for (GameCharacter c : arr) {
+            characterQueue.offer(c);
+        }
+    }
+    public Queue<GameCharacter> getCharacters() {
+        return characterQueue;
     }
 }
 

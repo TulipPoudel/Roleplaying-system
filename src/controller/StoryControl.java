@@ -21,32 +21,30 @@ public class StoryControl {
 
     
     private void preloadStories() {
-        pushStory(new Story("The Lost Kingdom", "You wake up in a ruined kingdom.", "Easy"));
-        pushStory(new Story("Shadow Forest", "Dark creatures roam the forest.", "Medium"));
-        pushStory(new Story("Dragon’s Trial", "Face the ancient dragon.", "Hard"));
-        pushStory(new Story("Desert of Echoes", "Voices guide your path.", "Medium"));
-        pushStory(new Story("Frozen Throne", "Claim the icy throne.", "Hard"));
-    }
-
-    
-    private void pushStory(Story story) {
-        storyStack.push(story);
-        story.addDefaultChoices();
-        tableModel.addRow(new Object[]{
-            story.getTitle(),
-            story.getIntro(),
-            story.getDifficulty()
-        });
+        addStory("The Lost Kingdom", "You wake up in a ruined kingdom.", "Easy");
+        addStory("Shadow Forest", "Dark creatures roam the forest.", "Medium");
+        addStory("Dragon’s Trial", "Face the ancient dragon.", "Hard");
+        addStory("Desert of Echoes", "Voices guide your path.", "Medium");
+        addStory("Frozen Throne", "Claim the icy throne.", "Hard");
     }
 
     
     public void addStory(String title, String intro, String difficulty) {
+        
         if (title.isEmpty() || intro.isEmpty()) {
             JOptionPane.showMessageDialog(null, "Please fill all fields");
             return;
         }
+        
+        Story s = new Story(title, intro, difficulty);
+        
+        storyStack.add(s);
 
-        pushStory(new Story(title, intro, difficulty));
+        tableModel.addRow(new Object[]{
+            title, intro, difficulty
+        });
+        
+        
     }
 
     
@@ -58,10 +56,10 @@ public class StoryControl {
             return;
         }
 
-        Story story = storyStack.get(row);
-        story.setTitle(title);
-        story.setIntro(intro);
-        story.setDifficulty(difficulty);
+        Story s = storyStack.get(row);
+        s.setTitle(title);
+        s.setIntro(intro);
+        s.setDifficulty(difficulty);
 
         tableModel.setValueAt(title, row, 0);
         tableModel.setValueAt(intro, row, 1);
@@ -83,10 +81,13 @@ public class StoryControl {
 
     
     public Story getStory(int index) {
+        if (index < 0 || index >= storyStack.size()) {
+            return null;
+        }
         return storyStack.get(index);
     }
 
-    public int size() {
+    public int getStoryCount() {
         return storyStack.size();
     }
 }
