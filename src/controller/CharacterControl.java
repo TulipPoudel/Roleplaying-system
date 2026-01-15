@@ -23,14 +23,14 @@ public class CharacterControl {
 
     
     private void preloadCharacters() {
-        characterQueue.offer(new GameCharacter("Kim Dokja"));
-        characterQueue.offer(new GameCharacter("Yoo Joonghyuk"));
-        characterQueue.offer(new GameCharacter("Han Sooyoung"));
+        characterQueue.offer(new GameCharacter("Kim Dokja","Reader", 13));
+        characterQueue.offer(new GameCharacter("Yoo Joonghyuk", "Protag", 13));
+        characterQueue.offer(new GameCharacter("Han Sooyoung", "Writer", 13));
     }
 
     
-    public void addCharacter(String name, String clazz) {
-        GameCharacter character = new GameCharacter(name);
+    public void addCharacter(String name, String clazz, int level) {
+        GameCharacter character = new GameCharacter(name, clazz, level);
         character.setClazz(clazz);
         characterQueue.offer(character);
     }

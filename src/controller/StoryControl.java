@@ -86,6 +86,16 @@ public class StoryControl {
         }
         return storyStack.get(index);
     }
+    
+    public Story findStoryByTitle(String title) {
+        for (int i = 0; i < getStoryCount(); i++) {
+            Story s = getStory(i);
+            if (s.getTitle().equals(title)) {
+                return s;
+            }
+        }
+        return null;
+    }
 
     public int getStoryCount() {
         return storyStack.size();

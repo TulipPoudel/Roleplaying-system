@@ -18,7 +18,7 @@ public class GameCharacter {
     private int level;
     
 
-    public GameCharacter(String name) {
+    public GameCharacter(String name, String clazz, int level) {
         this.name = name;
         this.clazz = "Warrior";
         this.score = 0;
@@ -39,6 +39,10 @@ public class GameCharacter {
     
     public int getLevel() {
         return level;
+    }
+    
+    public void setLevel(int level) {
+        this.level = level;
     }
 
     public void addScore(int points) {

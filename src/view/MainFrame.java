@@ -25,24 +25,23 @@ public class MainFrame extends javax.swing.JFrame {
     
     private JPanel mainPanel;
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(MainFrame.class.getName());
-    private ArrayList<Story> stories = new ArrayList<>();
+    
     private StoryControl storyControl;
     private CharacterControl characterControl;
     private GameController gameControl;
-    private ArrayList<GameCharacter> characters = new ArrayList<>();
     
     
     public MainFrame() {
         initComponents();
-        storyControl = new StoryControl(stories, jTable1);
-        characterControl = new CharacterControl(characters);
+        storyControl = new StoryControl(jTable1);
+        characterControl = new CharacterControl();
         gameControl = new GameController();
         loadCharactersToTable();
         loadStoriesToComboBox();
         
         
         DefaultTableModel charModel = (DefaultTableModel) jTable2.getModel();
-        charModel.setColumnIdentifiers(new Object[]{"Name", "Class", "Score"});
+        charModel.setColumnIdentifiers(new Object[]{"Name", "Class", "Level"});
         
         
         DefaultTableModel storyModel = (DefaultTableModel) jTable1.getModel();
@@ -54,13 +53,11 @@ public class MainFrame extends javax.swing.JFrame {
     
     private void loadStoriesToComboBox() {
         storyComboBox.removeAllItems();
-        for (Story s : stories) {
+
+        for (int i = 0; i < storyControl.getStoryCount(); i++) {
+            Story s = storyControl.getStory(i);
             storyComboBox.addItem(s.getTitle());
         }
-        jComboBox2.removeAllItems();
-        jComboBox2.addItem("Easy");
-        jComboBox2.addItem("Medium");
-        jComboBox2.addItem("Hard");
     }
     private void handleChoice(int points) {
         gameControl.addScore(points);
@@ -71,12 +68,38 @@ public class MainFrame extends javax.swing.JFrame {
         DefaultTableModel model = (DefaultTableModel) jTable2.getModel();
         model.setRowCount(0);
 
-        for (GameCharacter c : characters) {
+        for (GameCharacter c : characterControl.getCharacters()) {
             model.addRow(new Object[]{
                 c.getName(),
                 c.getClazz(),
-                c.getScore()
+                c.getLevel()
             });
+        }
+    }
+    
+    private void loadNextChoices() {
+
+        StoryChoice c1 = gameControl.nextChoice();
+        StoryChoice c2 = gameControl.nextChoice();
+        StoryChoice c3 = gameControl.nextChoice();
+
+        choice1Button.setEnabled(c1 != null);
+        choice2Button.setEnabled(c2 != null);
+        choice3Button.setEnabled(c3 != null);
+
+        if (c1 != null) {
+            choice1Button.setText(c1.getText());
+            choice1Button.putClientProperty("choice", c1);
+        }
+
+        if (c2 != null) {
+            choice2Button.setText(c2.getText());
+            choice2Button.putClientProperty("choice", c2);
+        }
+
+        if (c3 != null) {
+            choice3Button.setText(c3.getText());
+            choice3Button.putClientProperty("choice", c3);
         }
     }
 
@@ -91,26 +114,28 @@ public class MainFrame extends javax.swing.JFrame {
 
         MainPanel = new javax.swing.JPanel();
         Signup = new javax.swing.JPanel();
+        jButton1 = new javax.swing.JButton();
+        jButton2 = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel15 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
+        emailTextField = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
         nameTextField = new javax.swing.JTextField();
         jPasswordField1 = new javax.swing.JPasswordField();
         jPasswordField2 = new javax.swing.JPasswordField();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
-        jLabel1 = new javax.swing.JLabel();
-        jLabel15 = new javax.swing.JLabel();
-        emailTextField = new javax.swing.JTextField();
+        jLabel20 = new javax.swing.JLabel();
         Login = new javax.swing.JPanel();
+        usernameTextField = new javax.swing.JTextField();
+        passwordField = new javax.swing.JPasswordField();
         jLabel6 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
         jButton3 = new javax.swing.JButton();
         jButton4 = new javax.swing.JButton();
-        usernameTextField = new javax.swing.JTextField();
-        passwordField = new javax.swing.JPasswordField();
+        jLabel23 = new javax.swing.JLabel();
         AdminDashboard = new javax.swing.JPanel();
         jLabel11 = new javax.swing.JLabel();
         jLabel12 = new javax.swing.JLabel();
@@ -135,8 +160,10 @@ public class MainFrame extends javax.swing.JFrame {
         jButton7 = new javax.swing.JButton();
         jButton9 = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
-        jButton17 = new javax.swing.JButton();
         jLabel16 = new javax.swing.JLabel();
+        jButton16 = new javax.swing.JButton();
+        jButton17 = new javax.swing.JButton();
+        jLabel25 = new javax.swing.JLabel();
         jScrollPane3 = new javax.swing.JScrollPane();
         jTable2 = new javax.swing.JTable();
         CharacterCreation = new javax.swing.JPanel();
@@ -148,6 +175,9 @@ public class MainFrame extends javax.swing.JFrame {
         jButton19 = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
         jLabel14 = new javax.swing.JLabel();
+        jLabel27 = new javax.swing.JLabel();
+        jToggleButton1 = new javax.swing.JToggleButton();
+        jLabel26 = new javax.swing.JLabel();
         StorySelection = new javax.swing.JPanel();
         jLabel17 = new javax.swing.JLabel();
         jButton12 = new javax.swing.JButton();
@@ -158,6 +188,8 @@ public class MainFrame extends javax.swing.JFrame {
         storyIntroTextArea = new javax.swing.JTextArea();
         jPanel4 = new javax.swing.JPanel();
         jLabel18 = new javax.swing.JLabel();
+        jButton20 = new javax.swing.JButton();
+        searchStoryField = new javax.swing.JTextField();
         RolePlay = new javax.swing.JPanel();
         scoreProgressBar = new javax.swing.JProgressBar();
         choice1Button = new javax.swing.JButton();
@@ -168,135 +200,108 @@ public class MainFrame extends javax.swing.JFrame {
         jButton14 = new javax.swing.JButton();
         jButton15 = new javax.swing.JButton();
         jPanel5 = new javax.swing.JPanel();
-        jLabel21 = new javax.swing.JLabel();
+        jTextField1 = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         MainPanel.setLayout(new java.awt.CardLayout());
 
-        Signup.setBackground(new java.awt.Color(255, 255, 204));
-
-        jLabel2.setFont(new java.awt.Font("Sitka Small", 0, 18)); // NOI18N
-        jLabel2.setText("SIGN UP AS USER");
-
-        jLabel3.setText("Name");
-
-        jLabel4.setText("Password");
-
-        jLabel5.setText("Confirm password");
+        Signup.setBackground(new java.awt.Color(0, 0, 0));
+        Signup.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jButton1.setBackground(new java.awt.Color(0, 102, 102));
+        jButton1.setFont(new java.awt.Font("Segoe UI", 0, 10)); // NOI18N
         jButton1.setForeground(new java.awt.Color(255, 255, 255));
-        jButton1.setText("Sign up");
+        jButton1.setText("Log in");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton1ActionPerformed(evt);
             }
         });
+        Signup.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 450, 70, 20));
 
         jButton2.setBackground(new java.awt.Color(0, 102, 102));
         jButton2.setForeground(new java.awt.Color(255, 255, 255));
-        jButton2.setText("Login");
+        jButton2.setText("Sign Up");
         jButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton2ActionPerformed(evt);
             }
         });
+        Signup.add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 350, -1, -1));
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 8)); // NOI18N
+        jLabel1.setForeground(new java.awt.Color(255, 255, 255));
         jLabel1.setText("Admin login?");
+        Signup.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 430, -1, 10));
 
+        jLabel15.setForeground(new java.awt.Color(255, 255, 255));
         jLabel15.setText("Email");
+        Signup.add(jLabel15, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 200, -1, -1));
 
-        emailTextField.addActionListener(new java.awt.event.ActionListener() {
+        jLabel2.setFont(new java.awt.Font("Sitka Small", 0, 18)); // NOI18N
+        jLabel2.setText("SIGN UP AS USER");
+        Signup.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 70, -1, -1));
+
+        emailTextField.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        Signup.add(emailTextField, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 200, 80, -1));
+
+        jLabel3.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel3.setText("Name");
+        Signup.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 150, -1, -1));
+
+        jLabel4.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel4.setText("Password");
+        Signup.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 250, -1, -1));
+
+        jLabel5.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel5.setText("Confirm password");
+        Signup.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 290, 100, 40));
+
+        nameTextField.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        Signup.add(nameTextField, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 150, 80, -1));
+
+        jPasswordField1.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        Signup.add(jPasswordField1, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 250, 80, -1));
+
+        jPasswordField2.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        jPasswordField2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                emailTextFieldActionPerformed(evt);
+                jPasswordField2ActionPerformed(evt);
             }
         });
+        Signup.add(jPasswordField2, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 300, 80, -1));
 
-        javax.swing.GroupLayout SignupLayout = new javax.swing.GroupLayout(Signup);
-        Signup.setLayout(SignupLayout);
-        SignupLayout.setHorizontalGroup(
-            SignupLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, SignupLayout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(SignupLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(SignupLayout.createSequentialGroup()
-                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap())
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, SignupLayout.createSequentialGroup()
-                        .addComponent(jLabel1)
-                        .addGap(39, 39, 39))))
-            .addGroup(SignupLayout.createSequentialGroup()
-                .addGap(79, 79, 79)
-                .addGroup(SignupLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(SignupLayout.createSequentialGroup()
-                        .addComponent(jLabel4)
-                        .addGap(65, 65, 65)
-                        .addComponent(jPasswordField1))
-                    .addGroup(SignupLayout.createSequentialGroup()
-                        .addComponent(jLabel5)
-                        .addGap(18, 18, 18)
-                        .addComponent(jPasswordField2))
-                    .addGroup(SignupLayout.createSequentialGroup()
-                        .addGroup(SignupLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel15)
-                            .addComponent(jLabel3))
-                        .addGap(83, 83, 83)
-                        .addGroup(SignupLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(nameTextField)
-                            .addComponent(emailTextField))))
-                .addGap(116, 116, 116))
-            .addGroup(SignupLayout.createSequentialGroup()
-                .addGroup(SignupLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(SignupLayout.createSequentialGroup()
-                        .addGap(246, 246, 246)
-                        .addComponent(jLabel2))
-                    .addGroup(SignupLayout.createSequentialGroup()
-                        .addGap(288, 288, 288)
-                        .addComponent(jButton1)))
-                .addGap(0, 238, Short.MAX_VALUE))
-        );
-        SignupLayout.setVerticalGroup(
-            SignupLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(SignupLayout.createSequentialGroup()
-                .addGap(25, 25, 25)
-                .addComponent(jLabel2)
-                .addGap(49, 49, 49)
-                .addGroup(SignupLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel3)
-                    .addComponent(nameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(47, 47, 47)
-                .addGroup(SignupLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel15)
-                    .addComponent(emailTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 49, Short.MAX_VALUE)
-                .addGroup(SignupLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel4)
-                    .addComponent(jPasswordField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(50, 50, 50)
-                .addGroup(SignupLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel5)
-                    .addComponent(jPasswordField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(56, 56, 56)
-                .addComponent(jButton1)
-                .addGap(71, 71, 71)
-                .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(14, 14, 14))
-        );
+        jLabel20.setIcon(new javax.swing.ImageIcon(getClass().getResource("/coursework/images/Background.png"))); // NOI18N
+        Signup.add(jLabel20, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 360, -1));
 
         MainPanel.add(Signup, "card4");
 
-        Login.setBackground(new java.awt.Color(255, 255, 204));
+        Login.setBackground(new java.awt.Color(0, 0, 0));
+        Login.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        usernameTextField.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        Login.add(usernameTextField, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 180, 80, -1));
+
+        passwordField.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        passwordField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                passwordFieldActionPerformed(evt);
+            }
+        });
+        Login.add(passwordField, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 250, 80, -1));
 
         jLabel6.setFont(new java.awt.Font("Sitka Small", 0, 18)); // NOI18N
         jLabel6.setText("LOGIN AS ADMIN");
+        Login.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 70, -1, -1));
 
+        jLabel7.setForeground(new java.awt.Color(255, 255, 255));
         jLabel7.setText("Username");
+        Login.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 180, -1, -1));
 
+        jLabel8.setForeground(new java.awt.Color(255, 255, 255));
         jLabel8.setText("Password");
+        Login.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 250, -1, -1));
 
         jButton3.setBackground(new java.awt.Color(0, 102, 102));
         jButton3.setForeground(new java.awt.Color(255, 255, 255));
@@ -306,9 +311,10 @@ public class MainFrame extends javax.swing.JFrame {
                 jButton3ActionPerformed(evt);
             }
         });
+        Login.add(jButton3, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 310, -1, -1));
 
         jButton4.setBackground(new java.awt.Color(0, 102, 102));
-        jButton4.setFont(new java.awt.Font("Segoe UI", 0, 10)); // NOI18N
+        jButton4.setFont(new java.awt.Font("Segoe UI", 0, 8)); // NOI18N
         jButton4.setForeground(new java.awt.Color(255, 255, 255));
         jButton4.setText("Go back to sign-up");
         jButton4.addActionListener(new java.awt.event.ActionListener() {
@@ -316,59 +322,10 @@ public class MainFrame extends javax.swing.JFrame {
                 jButton4ActionPerformed(evt);
             }
         });
+        Login.add(jButton4, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 430, -1, -1));
 
-        passwordField.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                passwordFieldActionPerformed(evt);
-            }
-        });
-
-        javax.swing.GroupLayout LoginLayout = new javax.swing.GroupLayout(Login);
-        Login.setLayout(LoginLayout);
-        LoginLayout.setHorizontalGroup(
-            LoginLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, LoginLayout.createSequentialGroup()
-                .addGap(0, 0, Short.MAX_VALUE)
-                .addComponent(jButton4)
-                .addGap(24, 24, 24))
-            .addGroup(LoginLayout.createSequentialGroup()
-                .addGroup(LoginLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(LoginLayout.createSequentialGroup()
-                        .addGap(156, 156, 156)
-                        .addGroup(LoginLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel7)
-                            .addComponent(jLabel8))
-                        .addGap(64, 64, 64)
-                        .addGroup(LoginLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(passwordField, javax.swing.GroupLayout.PREFERRED_SIZE, 114, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(usernameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 114, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(LoginLayout.createSequentialGroup()
-                        .addGap(214, 214, 214)
-                        .addComponent(jLabel6))
-                    .addGroup(LoginLayout.createSequentialGroup()
-                        .addGap(227, 227, 227)
-                        .addComponent(jButton3)))
-                .addContainerGap(177, Short.MAX_VALUE))
-        );
-        LoginLayout.setVerticalGroup(
-            LoginLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(LoginLayout.createSequentialGroup()
-                .addGap(34, 34, 34)
-                .addComponent(jLabel6)
-                .addGap(99, 99, 99)
-                .addGroup(LoginLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel7)
-                    .addComponent(usernameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(LoginLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel8)
-                    .addComponent(passwordField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(59, 59, 59)
-                .addComponent(jButton3)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 172, Short.MAX_VALUE)
-                .addComponent(jButton4)
-                .addGap(23, 23, 23))
-        );
+        jLabel23.setIcon(new javax.swing.ImageIcon(getClass().getResource("/coursework/images/Background.png"))); // NOI18N
+        Login.add(jLabel23, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
 
         MainPanel.add(Login, "card5");
 
@@ -376,7 +333,7 @@ public class MainFrame extends javax.swing.JFrame {
 
         jLabel11.setText("Story Title");
 
-        jLabel12.setText("Story Intro");
+        jLabel12.setText("Premise");
 
         jLabel13.setText("Difficulty");
 
@@ -400,13 +357,13 @@ public class MainFrame extends javax.swing.JFrame {
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null}
             },
             new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
+                "Title", "Premise", "Difficulty"
             }
         ));
         jScrollPane2.setViewportView(jTable1);
@@ -422,6 +379,11 @@ public class MainFrame extends javax.swing.JFrame {
         jButton11.setBackground(new java.awt.Color(0, 102, 102));
         jButton11.setForeground(new java.awt.Color(255, 255, 255));
         jButton11.setText("Logout");
+        jButton11.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton11ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -504,7 +466,7 @@ public class MainFrame extends javax.swing.JFrame {
                         .addGroup(AdminDashboardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel12)
                             .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 33, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 157, Short.MAX_VALUE)
                         .addGroup(AdminDashboardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel13)
                             .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -513,7 +475,7 @@ public class MainFrame extends javax.swing.JFrame {
                             .addComponent(jButton5)
                             .addComponent(jButton8)
                             .addComponent(jButton10))
-                        .addGap(0, 28, Short.MAX_VALUE)
+                        .addGap(0, 153, Short.MAX_VALUE)
                         .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addContainerGap())
                     .addGroup(AdminDashboardLayout.createSequentialGroup()
@@ -525,7 +487,8 @@ public class MainFrame extends javax.swing.JFrame {
 
         UserHomePage.setLayout(new java.awt.CardLayout());
 
-        CharacterList.setBackground(new java.awt.Color(255, 255, 204));
+        CharacterList.setBackground(new java.awt.Color(242, 227, 184));
+        CharacterList.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jButton6.setBackground(new java.awt.Color(0, 102, 102));
         jButton6.setForeground(new java.awt.Color(255, 255, 255));
@@ -535,6 +498,7 @@ public class MainFrame extends javax.swing.JFrame {
                 jButton6ActionPerformed(evt);
             }
         });
+        CharacterList.add(jButton6, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 580, -1, -1));
 
         jButton7.setBackground(new java.awt.Color(0, 102, 102));
         jButton7.setForeground(new java.awt.Color(255, 255, 255));
@@ -544,6 +508,7 @@ public class MainFrame extends javax.swing.JFrame {
                 jButton7ActionPerformed(evt);
             }
         });
+        CharacterList.add(jButton7, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 580, -1, -1));
 
         jButton9.setBackground(new java.awt.Color(0, 102, 102));
         jButton9.setForeground(new java.awt.Color(255, 255, 255));
@@ -553,36 +518,58 @@ public class MainFrame extends javax.swing.JFrame {
                 jButton9ActionPerformed(evt);
             }
         });
+        CharacterList.add(jButton9, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 580, -1, -1));
 
-        jPanel1.setBackground(new java.awt.Color(204, 255, 204));
+        jPanel1.setBackground(new java.awt.Color(0, 153, 153));
 
-        jButton17.setText("Logout");
-
+        jLabel16.setFont(new java.awt.Font("Wide Latin", 0, 16)); // NOI18N
+        jLabel16.setForeground(new java.awt.Color(255, 255, 255));
         jLabel16.setText("Character List");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jButton17)
-                .addGap(38, 38, 38))
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(273, 273, 273)
+                .addGap(95, 95, 95)
                 .addComponent(jLabel16)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(108, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(18, 18, 18)
-                .addComponent(jButton17)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addContainerGap(17, Short.MAX_VALUE)
                 .addComponent(jLabel16)
                 .addContainerGap())
         );
 
+        CharacterList.add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 400, 40));
+
+        jButton16.setBackground(new java.awt.Color(0, 102, 102));
+        jButton16.setForeground(new java.awt.Color(255, 255, 255));
+        jButton16.setText("Sort");
+        jButton16.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton16ActionPerformed(evt);
+            }
+        });
+        CharacterList.add(jButton16, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 100, -1, -1));
+
+        jButton17.setBackground(new java.awt.Color(0, 102, 102));
+        jButton17.setFont(new java.awt.Font("Segoe UI", 0, 8)); // NOI18N
+        jButton17.setForeground(new java.awt.Color(255, 255, 255));
+        jButton17.setText("Logout");
+        jButton17.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton17ActionPerformed(evt);
+            }
+        });
+        CharacterList.add(jButton17, new org.netbeans.lib.awtextra.AbsoluteConstraints(332, 633, 60, 20));
+
+        jLabel25.setIcon(new javax.swing.ImageIcon(getClass().getResource("/coursework/images/character list bg.png"))); // NOI18N
+        CharacterList.add(jLabel25, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 40, 400, 620));
+
+        jTable2.setBackground(new java.awt.Color(0, 102, 102));
         jTable2.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null},
@@ -596,45 +583,19 @@ public class MainFrame extends javax.swing.JFrame {
         ));
         jScrollPane3.setViewportView(jTable2);
 
-        javax.swing.GroupLayout CharacterListLayout = new javax.swing.GroupLayout(CharacterList);
-        CharacterList.setLayout(CharacterListLayout);
-        CharacterListLayout.setHorizontalGroup(
-            CharacterListLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(CharacterListLayout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(CharacterListLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jButton7)
-                    .addComponent(jButton9)
-                    .addComponent(jButton6))
-                .addGap(34, 34, 34))
-            .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addGroup(CharacterListLayout.createSequentialGroup()
-                .addGap(20, 20, 20)
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 598, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(48, Short.MAX_VALUE))
-        );
-        CharacterListLayout.setVerticalGroup(
-            CharacterListLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(CharacterListLayout.createSequentialGroup()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 285, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 17, Short.MAX_VALUE)
-                .addComponent(jButton6)
-                .addGap(28, 28, 28)
-                .addComponent(jButton7)
-                .addGap(34, 34, 34)
-                .addComponent(jButton9)
-                .addGap(15, 15, 15))
-        );
+        CharacterList.add(jScrollPane3, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 200, 310, 340));
 
         UserHomePage.add(CharacterList, "card5");
 
         CharacterCreation.setBackground(new java.awt.Color(255, 255, 204));
+        CharacterCreation.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel22.setText("Character Name");
+        CharacterCreation.add(jLabel22, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 200, -1, -1));
+        CharacterCreation.add(characterNameField, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 200, 112, -1));
 
         jLabel24.setText("Class");
+        CharacterCreation.add(jLabel24, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 240, -1, -1));
 
         classComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Warrier", "Mage", "Rogue", "Archer" }));
         classComboBox.addActionListener(new java.awt.event.ActionListener() {
@@ -642,6 +603,7 @@ public class MainFrame extends javax.swing.JFrame {
                 classComboBoxActionPerformed(evt);
             }
         });
+        CharacterCreation.add(classComboBox, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 240, -1, -1));
 
         jButton18.setBackground(new java.awt.Color(0, 102, 102));
         jButton18.setForeground(new java.awt.Color(255, 255, 255));
@@ -651,6 +613,7 @@ public class MainFrame extends javax.swing.JFrame {
                 jButton18ActionPerformed(evt);
             }
         });
+        CharacterCreation.add(jButton18, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 420, -1, -1));
 
         jButton19.setBackground(new java.awt.Color(0, 102, 102));
         jButton19.setForeground(new java.awt.Color(255, 255, 255));
@@ -660,6 +623,7 @@ public class MainFrame extends javax.swing.JFrame {
                 jButton19ActionPerformed(evt);
             }
         });
+        CharacterCreation.add(jButton19, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 460, -1, -1));
 
         jPanel3.setBackground(new java.awt.Color(204, 255, 204));
 
@@ -670,60 +634,28 @@ public class MainFrame extends javax.swing.JFrame {
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
-                .addGap(275, 275, 275)
+                .addGap(150, 150, 150)
                 .addComponent(jLabel14)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(161, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                .addContainerGap(68, Short.MAX_VALUE)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addGap(16, 16, 16)
                 .addComponent(jLabel14)
-                .addGap(16, 16, 16))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        javax.swing.GroupLayout CharacterCreationLayout = new javax.swing.GroupLayout(CharacterCreation);
-        CharacterCreation.setLayout(CharacterCreationLayout);
-        CharacterCreationLayout.setHorizontalGroup(
-            CharacterCreationLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, CharacterCreationLayout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(CharacterCreationLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(CharacterCreationLayout.createSequentialGroup()
-                        .addGap(6, 6, 6)
-                        .addComponent(jButton19))
-                    .addComponent(jButton18))
-                .addGap(167, 167, 167))
-            .addGroup(CharacterCreationLayout.createSequentialGroup()
-                .addGap(142, 142, 142)
-                .addGroup(CharacterCreationLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jLabel22)
-                    .addComponent(jLabel24))
-                .addGap(55, 55, 55)
-                .addGroup(CharacterCreationLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(characterNameField, javax.swing.GroupLayout.PREFERRED_SIZE, 112, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(classComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(271, Short.MAX_VALUE))
-            .addComponent(jPanel3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-        );
-        CharacterCreationLayout.setVerticalGroup(
-            CharacterCreationLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(CharacterCreationLayout.createSequentialGroup()
-                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(50, 50, 50)
-                .addGroup(CharacterCreationLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel22)
-                    .addComponent(characterNameField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(48, 48, 48)
-                .addGroup(CharacterCreationLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel24)
-                    .addComponent(classComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(94, 94, 94)
-                .addComponent(jButton18)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton19)
-                .addContainerGap(141, Short.MAX_VALUE))
-        );
+        CharacterCreation.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 410, -1));
+
+        jLabel27.setText("level generator");
+        CharacterCreation.add(jLabel27, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 290, -1, -1));
+
+        jToggleButton1.setText("jToggleButton1");
+        CharacterCreation.add(jToggleButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 310, -1, -1));
+
+        jLabel26.setIcon(new javax.swing.ImageIcon(getClass().getResource("/coursework/images/character creation bg.png"))); // NOI18N
+        CharacterCreation.add(jLabel26, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 40, 400, 630));
 
         UserHomePage.add(CharacterCreation, "card4");
 
@@ -748,6 +680,11 @@ public class MainFrame extends javax.swing.JFrame {
         jLabel19.setText("Story Intro");
 
         storyComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        storyComboBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                storyComboBoxActionPerformed(evt);
+            }
+        });
 
         storyIntroTextArea.setEditable(false);
         storyIntroTextArea.setColumns(20);
@@ -765,60 +702,86 @@ public class MainFrame extends javax.swing.JFrame {
         jPanel4Layout.setHorizontalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createSequentialGroup()
-                .addGap(272, 272, 272)
+                .addGap(178, 178, 178)
                 .addComponent(jLabel18)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
-                .addContainerGap(55, Short.MAX_VALUE)
+                .addGap(17, 17, 17)
                 .addComponent(jLabel18)
-                .addGap(15, 15, 15))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
+
+        jButton20.setText("Search");
+        jButton20.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton20ActionPerformed(evt);
+            }
+        });
+
+        searchStoryField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                searchStoryFieldActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout StorySelectionLayout = new javax.swing.GroupLayout(StorySelection);
         StorySelection.setLayout(StorySelectionLayout);
         StorySelectionLayout.setHorizontalGroup(
             StorySelectionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(StorySelectionLayout.createSequentialGroup()
-                .addContainerGap(416, Short.MAX_VALUE)
-                .addGroup(StorySelectionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jButton13)
-                    .addComponent(jButton12))
-                .addGap(164, 164, 164))
-            .addGroup(StorySelectionLayout.createSequentialGroup()
-                .addGap(137, 137, 137)
-                .addGroup(StorySelectionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jLabel17)
-                    .addComponent(jLabel19))
-                .addGroup(StorySelectionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(StorySelectionLayout.createSequentialGroup()
-                        .addGap(77, 77, 77)
-                        .addComponent(storyComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(StorySelectionLayout.createSequentialGroup()
-                        .addGap(60, 60, 60)
-                        .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(0, 0, Short.MAX_VALUE))
             .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(StorySelectionLayout.createSequentialGroup()
+                .addGroup(StorySelectionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(StorySelectionLayout.createSequentialGroup()
+                        .addGap(50, 50, 50)
+                        .addComponent(jLabel19)
+                        .addGap(18, 18, 18)
+                        .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 270, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(StorySelectionLayout.createSequentialGroup()
+                        .addGap(51, 51, 51)
+                        .addComponent(jLabel17)
+                        .addGap(18, 18, 18)
+                        .addComponent(storyComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(46, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, StorySelectionLayout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(StorySelectionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, StorySelectionLayout.createSequentialGroup()
+                        .addComponent(searchStoryField, javax.swing.GroupLayout.PREFERRED_SIZE, 261, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jButton20)
+                        .addGap(12, 12, 12))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, StorySelectionLayout.createSequentialGroup()
+                        .addGroup(StorySelectionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(StorySelectionLayout.createSequentialGroup()
+                                .addGap(6, 6, 6)
+                                .addComponent(jButton13))
+                            .addComponent(jButton12))
+                        .addGap(84, 84, 84))))
         );
         StorySelectionLayout.setVerticalGroup(
             StorySelectionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(StorySelectionLayout.createSequentialGroup()
                 .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(StorySelectionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(searchStoryField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButton20))
+                .addGap(99, 99, 99)
                 .addGroup(StorySelectionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel17)
                     .addComponent(storyComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(84, 84, 84)
+                .addGap(18, 18, 18)
                 .addGroup(StorySelectionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel19)
-                    .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 122, Short.MAX_VALUE)
+                    .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 228, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(58, 58, 58)
                 .addComponent(jButton12)
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jButton13)
-                .addGap(53, 53, 53))
+                .addContainerGap(102, Short.MAX_VALUE))
         );
 
         UserHomePage.add(StorySelection, "card3");
@@ -869,68 +832,73 @@ public class MainFrame extends javax.swing.JFrame {
 
         jPanel5.setBackground(new java.awt.Color(204, 255, 204));
 
-        jLabel21.setText("Current Story");
+        jTextField1.setEditable(false);
+        jTextField1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTextField1ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
         jPanel5Layout.setHorizontalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel5Layout.createSequentialGroup()
-                .addGap(265, 265, 265)
-                .addComponent(jLabel21, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(160, 160, 160)
+                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 138, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel5Layout.setVerticalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
-                .addGap(0, 47, Short.MAX_VALUE)
-                .addComponent(jLabel21, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(21, Short.MAX_VALUE)
+                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
 
         javax.swing.GroupLayout RolePlayLayout = new javax.swing.GroupLayout(RolePlay);
         RolePlay.setLayout(RolePlayLayout);
         RolePlayLayout.setHorizontalGroup(
             RolePlayLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, RolePlayLayout.createSequentialGroup()
-                .addGap(0, 0, Short.MAX_VALUE)
-                .addComponent(jButton14)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton15)
-                .addGap(41, 41, 41))
+            .addComponent(jPanel5, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(RolePlayLayout.createSequentialGroup()
                 .addGroup(RolePlayLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(RolePlayLayout.createSequentialGroup()
-                        .addGap(70, 70, 70)
-                        .addGroup(RolePlayLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(choice3Button)
-                            .addComponent(choice2Button)
-                            .addComponent(choice1Button)
-                            .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 535, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(239, 239, 239)
+                        .addComponent(jButton14)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton15))
                     .addGroup(RolePlayLayout.createSequentialGroup()
-                        .addGap(113, 113, 113)
-                        .addComponent(scoreProgressBar, javax.swing.GroupLayout.PREFERRED_SIZE, 387, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(61, Short.MAX_VALUE))
-            .addComponent(jPanel5, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(38, 38, 38)
+                        .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 393, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(RolePlayLayout.createSequentialGroup()
+                        .addGap(54, 54, 54)
+                        .addGroup(RolePlayLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(choice1Button)
+                            .addComponent(scoreProgressBar, javax.swing.GroupLayout.PREFERRED_SIZE, 387, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(choice2Button)
+                            .addComponent(choice3Button))))
+                .addContainerGap(28, Short.MAX_VALUE))
         );
         RolePlayLayout.setVerticalGroup(
             RolePlayLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(RolePlayLayout.createSequentialGroup()
                 .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 242, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addGap(31, 31, 31)
+                .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 369, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(choice1Button)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(choice2Button)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 13, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(choice3Button)
-                .addGap(27, 27, 27)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 12, Short.MAX_VALUE)
                 .addGroup(RolePlayLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton14)
                     .addComponent(jButton15))
-                .addGap(18, 18, 18)
+                .addGap(73, 73, 73)
                 .addComponent(scoreProgressBar, javax.swing.GroupLayout.PREFERRED_SIZE, 13, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18))
+                .addGap(27, 27, 27))
         );
 
         UserHomePage.add(RolePlay, "card2");
@@ -951,86 +919,6 @@ public class MainFrame extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        String name = nameTextField.getText();
-        String email = emailTextField.getText();
-
-        if (name.isEmpty() || email.isEmpty()) {
-            JOptionPane.showMessageDialog(
-                this,
-                "Please fill in all fields",
-                "Validation Error",
-                JOptionPane.ERROR_MESSAGE
-            );
-            return;
-        }
-
-        
-        JOptionPane.showMessageDialog(this, "Signup successful!");
-
-        CardLayout cl = (CardLayout) MainPanel.getLayout();
-        cl.show(MainPanel, "card2");        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton1ActionPerformed
-
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        CardLayout cl = (CardLayout) MainPanel.getLayout();
-        cl.show(MainPanel, "card5");    // TODO add your handling code here:
-    }//GEN-LAST:event_jButton2ActionPerformed
-
-    private void emailTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_emailTextFieldActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_emailTextFieldActionPerformed
-
-    private void passwordFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_passwordFieldActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_passwordFieldActionPerformed
-
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        String username = usernameTextField.getText();
-        String password = new String(passwordField.getPassword());
-        
-        if (username.equals("admin") && password.equals("admin,123")) {
-            JOptionPane.showMessageDialog(this, "Admin login successful");
-
-            CardLayout cl = (CardLayout) MainPanel.getLayout();
-            cl.show(MainPanel, "card3");
-
-        } else {
-            JOptionPane.showMessageDialog(
-                this,
-                "Invalid admin credentials",
-                "Login Failed",
-                JOptionPane.ERROR_MESSAGE
-            );
-        }
-               // TODO add your handling code here:
-    }//GEN-LAST:event_jButton3ActionPerformed
-
-    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
-        CardLayout cl = (CardLayout) MainPanel.getLayout();
-        cl.show(MainPanel, "card4");        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton4ActionPerformed
-
-    private void jButton10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton10ActionPerformed
-        storyControl.updateStory(
-            jTextField3.getText(),
-            jTextArea1.getText(),
-            jComboBox2.getSelectedItem().toString()
-        );   // TODO add your handling code here:
-    }//GEN-LAST:event_jButton10ActionPerformed
-
-    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
-        storyControl.addStory(
-            jTextField3.getText(),
-            jTextArea1.getText(),
-            jComboBox2.getSelectedItem().toString()
-        );        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton5ActionPerformed
-
-    private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
-        storyControl.deleteStory();        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton8ActionPerformed
-
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
         CardLayout cl = (CardLayout) UserHomePage.getLayout();
         cl.show(UserHomePage, "CharacterCreation");        // TODO add your handling code here:
@@ -1044,7 +932,7 @@ public class MainFrame extends javax.swing.JFrame {
         
         
         if (storyComboBox.getSelectedIndex() != -1) {
-            Story selectedStory = stories.get(storyComboBox.getSelectedIndex());
+            Story selectedStory = storyControl.getStory(storyComboBox.getSelectedIndex());
             storyIntroTextArea.setText(selectedStory.getIntro());
         }
 
@@ -1059,9 +947,19 @@ public class MainFrame extends javax.swing.JFrame {
     private void jButton18ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton18ActionPerformed
         String name = characterNameField.getText();
         String clazz = classComboBox.getSelectedItem().toString();
+        int level = Integer.parseInt(jLabel26.getText());
 
-        characterControl.addCharacter(name);
-        loadCharactersToTable();        // TODO add your handling code here:
+        if (name.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Enter character name");
+            return;
+        }
+
+        characterControl.addCharacter(name, clazz, level);
+
+        loadCharactersToTable(); 
+
+        CardLayout cl = (CardLayout) UserHomePage.getLayout();
+        cl.show(UserHomePage, "CharacterList");        // TODO add your handling code here:
     }//GEN-LAST:event_jButton18ActionPerformed
 
     private void jButton12ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton12ActionPerformed
@@ -1078,39 +976,57 @@ public class MainFrame extends javax.swing.JFrame {
             return;
         }
 
-        if (charIndex >= characters.size()) {
+        GameCharacter selectedCharacter = null;
+        int i = 0;
+
+        for (GameCharacter gc : characterControl.getCharacters()) {
+            if (i == charIndex) {
+                selectedCharacter = gc;
+                break;
+            }
+            i++;
+        }
+
+        if (selectedCharacter == null) {
             JOptionPane.showMessageDialog(this, "Invalid character selection");
             return;
         }
 
-        GameCharacter c = characters.get(charIndex);
-        Story s = stories.get(storyIndex);
-
-        gameControl.startGame(c, s);
-        storyTextArea.setText(s.getIntro());
+        Story selectedStory = storyControl.getStory(storyIndex);
+        
+        if (selectedStory == null) {
+            JOptionPane.showMessageDialog(this, "Invalid story selection");
+            return;
+        }
+        
+        gameControl.startGame(selectedCharacter, selectedStory);
+        
+        storyTextArea.setText(selectedStory.getIntro());
+    
+        gameControl.startGame(selectedCharacter, selectedStory);
+        storyTextArea.setText(selectedStory.getIntro());
         
         
-        ArrayList<StoryChoice> choices = s.getChoices();
+        ArrayList<StoryChoice> choices = selectedStory.getChoices();
         if (choices.size() > 0) choice1Button.setText(choices.get(0).getText());
         if (choices.size() > 1) choice2Button.setText(choices.get(1).getText());
         if (choices.size() > 2) choice3Button.setText(choices.get(2).getText());
         
-        scoreProgressBar.setValue(c.getScore());
+        scoreProgressBar.setValue(selectedCharacter.getScore());
 
         CardLayout cl = (CardLayout) UserHomePage.getLayout();
         cl.show(UserHomePage, "card2");        // TODO add your handling code here:
     }//GEN-LAST:event_jButton12ActionPerformed
 
     private void choice2ButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_choice2ButtonActionPerformed
-        StoryChoice choice = gameControl.nextChoice();
-        if (choice != null) {
-            gameControl.applyChoice(choice);
-            scoreProgressBar.setValue(gameControl.getScore());
-            storyTextArea.append("\n\nYou chose: " + choice.getText() + 
+        StoryChoice choice = (StoryChoice) choice1Button.getClientProperty("choice");
+        if (choice != null) return; 
+        gameControl.applyChoice(choice);
+        scoreProgressBar.setValue(gameControl.getScore());
+        storyTextArea.append("\n\nYou chose: " + choice.getText() + 
                                " (+" + choice.getPoints() + " points)");
-        } else {
-            gameControl.finishGame();
-        }       // TODO add your handling code here:
+         
+        loadNextChoices();      // TODO add your handling code here:
     }//GEN-LAST:event_choice2ButtonActionPerformed
 
     private void jButton19ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton19ActionPerformed
@@ -1159,28 +1075,155 @@ public class MainFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton9ActionPerformed
 
     private void choice1ButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_choice1ButtonActionPerformed
-        StoryChoice choice = gameControl.nextChoice();
-        if (choice != null) {
-            gameControl.applyChoice(choice);
-            scoreProgressBar.setValue(gameControl.getScore());
-            storyTextArea.append("\n\nYou chose: " + choice.getText() + 
+        StoryChoice choice = (StoryChoice) choice1Button.getClientProperty("choice");
+        if (choice != null) return; 
+        gameControl.applyChoice(choice);
+        scoreProgressBar.setValue(gameControl.getScore());
+        storyTextArea.append("\n\nYou chose: " + choice.getText() + 
                                " (+" + choice.getPoints() + " points)");
-        } else {
-            gameControl.finishGame();
-        }    // TODO add your handling code here:
+         
+        loadNextChoices();
+            // TODO add your handling code here:
     }//GEN-LAST:event_choice1ButtonActionPerformed
 
     private void choice3ButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_choice3ButtonActionPerformed
-        StoryChoice choice = gameControl.nextChoice();
-        if (choice != null) {
-            gameControl.applyChoice(choice);
-            scoreProgressBar.setValue(gameControl.getScore());
-            storyTextArea.append("\n\nYou chose: " + choice.getText() + 
+        StoryChoice choice = (StoryChoice) choice1Button.getClientProperty("choice");
+        if (choice != null) return; 
+        gameControl.applyChoice(choice);
+        scoreProgressBar.setValue(gameControl.getScore());
+        storyTextArea.append("\n\nYou chose: " + choice.getText() + 
                                " (+" + choice.getPoints() + " points)");
-        } else {
-            gameControl.finishGame();
-        }        // TODO add your handling code here:
+         
+        loadNextChoices();        // TODO add your handling code here:
     }//GEN-LAST:event_choice3ButtonActionPerformed
+
+    private void jButton10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton10ActionPerformed
+        storyControl.updateStory(
+            jTextField3.getText(),
+            jTextArea1.getText(),
+            jComboBox2.getSelectedItem().toString()
+        );   // TODO add your handling code here:
+    }//GEN-LAST:event_jButton10ActionPerformed
+
+    private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
+        storyControl.deleteStory();        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton8ActionPerformed
+
+    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+        storyControl.addStory(
+            jTextField3.getText(),
+            jTextArea1.getText(),
+            jComboBox2.getSelectedItem().toString()
+        );        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton5ActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        CardLayout cl = (CardLayout) MainPanel.getLayout();
+        cl.show(MainPanel, "card5");        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jPasswordField2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jPasswordField2ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jPasswordField2ActionPerformed
+
+    private void passwordFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_passwordFieldActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_passwordFieldActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        String name = nameTextField.getText().trim();
+        String email = emailTextField.getText().trim();
+        String pass1 = new String(jPasswordField1.getPassword());
+        String pass2 = new String(jPasswordField2.getPassword());
+
+        if (name.isEmpty() || email.isEmpty() || pass1.isEmpty() || pass2.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Please fill all fields");
+            return;
+        }
+
+        if (!pass1.equals(pass2)) {
+            JOptionPane.showMessageDialog(this, "Passwords do not match");
+            return;
+        }
+
+        JOptionPane.showMessageDialog(this, "Signup successful!");
+
+        CardLayout cl = (CardLayout) MainPanel.getLayout();
+        cl.show(MainPanel, "card2");                 // TODO add your handling code here:
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        String username = usernameTextField.getText();
+        String password = new String(passwordField.getPassword());
+
+        if (username.equals("admin") && password.equals("admin123")) {
+            JOptionPane.showMessageDialog(this, "Admin login successful");
+
+            CardLayout cl = (CardLayout) MainPanel.getLayout();
+            cl.show(MainPanel, "card3"); 
+        } else {
+            JOptionPane.showMessageDialog(this, "Invalid admin credentials");
+        }        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+        CardLayout cl = (CardLayout) MainPanel.getLayout();
+        cl.show(MainPanel, "card4");        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton4ActionPerformed
+
+    private void jButton11ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton11ActionPerformed
+        CardLayout cl = (CardLayout) MainPanel.getLayout();
+        cl.show(MainPanel, "card5");        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton11ActionPerformed
+
+    private void jButton17ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton17ActionPerformed
+        CardLayout cl = (CardLayout) MainPanel.getLayout();
+        cl.show(MainPanel, "card5");        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton17ActionPerformed
+
+    private void jButton16ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton16ActionPerformed
+        characterControl.sortByLevel();
+        loadCharactersToTable();
+        JOptionPane.showMessageDialog(this, "Characters sorted by level");        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton16ActionPerformed
+
+    private void jButton20ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton20ActionPerformed
+        String keyword = searchStoryField.getText().trim();
+
+        if (keyword.isEmpty()) {
+            loadStoriesToComboBox(); 
+            return;
+        }
+
+        storyComboBox.removeAllItems();
+
+        for (int i = 0; i < storyControl.getStoryCount(); i++) {
+            Story s = storyControl.getStory(i);
+            if (s.getTitle().toLowerCase().contains(keyword.toLowerCase())) {
+                storyComboBox.addItem(s.getTitle());
+            }
+        }        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton20ActionPerformed
+
+    private void searchStoryFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchStoryFieldActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_searchStoryFieldActionPerformed
+
+    private void storyComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_storyComboBoxActionPerformed
+        String selectedTitle = (String) storyComboBox.getSelectedItem();
+        if (selectedTitle == null) return;
+
+        Story s = storyControl.findStoryByTitle(selectedTitle);
+
+        if (s != null) {
+            storyIntroTextArea.setText(s.getIntro());
+            storyIntroTextArea.setEditable(false); 
+        }        // TODO add your handling code here:
+    }//GEN-LAST:event_storyComboBoxActionPerformed
+
+    private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jTextField1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -1230,10 +1273,12 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JButton jButton13;
     private javax.swing.JButton jButton14;
     private javax.swing.JButton jButton15;
+    private javax.swing.JButton jButton16;
     private javax.swing.JButton jButton17;
     private javax.swing.JButton jButton18;
     private javax.swing.JButton jButton19;
     private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton20;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
@@ -1254,9 +1299,13 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel18;
     private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel21;
+    private javax.swing.JLabel jLabel20;
     private javax.swing.JLabel jLabel22;
+    private javax.swing.JLabel jLabel23;
     private javax.swing.JLabel jLabel24;
+    private javax.swing.JLabel jLabel25;
+    private javax.swing.JLabel jLabel26;
+    private javax.swing.JLabel jLabel27;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
@@ -1280,10 +1329,13 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JTable jTable1;
     private javax.swing.JTable jTable2;
     private javax.swing.JTextArea jTextArea1;
+    private javax.swing.JTextField jTextField1;
     private javax.swing.JTextField jTextField3;
+    private javax.swing.JToggleButton jToggleButton1;
     private javax.swing.JTextField nameTextField;
     private javax.swing.JPasswordField passwordField;
     private javax.swing.JProgressBar scoreProgressBar;
+    private javax.swing.JTextField searchStoryField;
     private javax.swing.JComboBox<String> storyComboBox;
     private javax.swing.JTextArea storyIntroTextArea;
     private javax.swing.JTextArea storyTextArea;
