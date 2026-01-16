@@ -20,9 +20,9 @@ public class GameCharacter {
 
     public GameCharacter(String name, String clazz, int level) {
         this.name = name;
-        this.clazz = "Warrior";
+        this.clazz = clazz;
         this.score = 0;
-        this.level = 1;
+        this.level = level;
     }
 
     public String getName() {

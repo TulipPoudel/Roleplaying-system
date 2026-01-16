@@ -1,5 +1,6 @@
 package controller;
 
+import java.util.ArrayList;
 import java.util.Stack;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
@@ -93,6 +94,74 @@ public class StoryControl {
             if (s.getTitle().equals(title)) {
                 return s;
             }
+        }
+        return null;
+    }
+    
+    private ArrayList<Story> getStoryList() {
+        return new ArrayList<>(storyStack);
+    }
+    
+    public void sortStoriesByTitle() {
+        ArrayList<Story> list = getStoryList();
+        mergeSort(list, 0, list.size() - 1);
+
+        storyStack.clear();
+        tableModel.setRowCount(0);
+
+        for (Story s : list) {
+            storyStack.add(s);
+            tableModel.addRow(new Object[]{
+                s.getTitle(), s.getIntro(), s.getDifficulty()
+            });
+        }
+    }
+
+    private void mergeSort(ArrayList<Story> list, int left, int right) {
+        if (left < right) {
+            int mid = (left + right) / 2;
+            mergeSort(list, left, mid);
+            mergeSort(list, mid + 1, right);
+            merge(list, left, mid, right);
+        }
+    }
+
+    private void merge(ArrayList<Story> list, int left, int mid, int right) {
+        ArrayList<Story> temp = new ArrayList<>();
+
+        int i = left, j = mid + 1;
+
+        while (i <= mid && j <= right) {
+            if (list.get(i).getTitle().compareToIgnoreCase(
+                list.get(j).getTitle()) <= 0) {
+                temp.add(list.get(i++));
+            } else {
+                temp.add(list.get(j++));
+            }
+        }
+
+        while (i <= mid) temp.add(list.get(i++));
+        while (j <= right) temp.add(list.get(j++));
+
+        for (int k = 0; k < temp.size(); k++) {
+            list.set(left + k, temp.get(k));
+        }
+    }
+    
+    public Story binarySearchByTitle(String key) {
+        ArrayList<Story> list = getStoryList();
+
+        int left = 0;
+        int right = list.size() - 1;
+
+        while (left <= right) {
+            int mid = (left + right) / 2;
+            int cmp = list.get(mid).getTitle()
+                    .compareToIgnoreCase(key);
+
+            if (cmp == 0) return list.get(mid);
+            else if (cmp < 0) left = mid + 1;
+            else right = mid - 1;
         }
         return null;
     }

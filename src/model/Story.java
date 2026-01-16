@@ -20,6 +20,7 @@ public class Story {
         this.intro = intro;
         this.difficulty = difficulty;
         this.choices = new ArrayList<>();
+        addDefaultChoices();
     }
     
     public void addChoice(StoryChoice choice) {

@@ -19,12 +19,10 @@ public class GameController {
 
     private GameCharacter currentCharacter;
     private Queue<StoryChoice> choiceQueue = new LinkedList<>();
-
-    private int currentScore = 0; 
+ 
 
     public void startGame(GameCharacter character, Story story) {
-        this.currentCharacter = character;
-        this.currentScore = character.getScore(); 
+        this.currentCharacter = character; 
         choiceQueue.clear();
 
         
@@ -40,17 +38,15 @@ public class GameController {
         return choiceQueue.poll(); 
     }
 
-    public void applyChoice(StoryChoice choice) {
-        currentScore += choice.getPoints(); 
+    public void applyChoice(StoryChoice choice) { 
         currentCharacter.addScore(choice.getPoints()); 
     }
 
     public int getScore() {
-        return currentScore;
+        return currentCharacter.getScore();
     }
     
     public void addScore(int points) {
-        currentScore += points;
         if (currentCharacter != null) {
             currentCharacter.addScore(points);
         }
