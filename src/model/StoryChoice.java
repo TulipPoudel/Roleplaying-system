@@ -10,9 +10,9 @@ package model;
  */
 
 public class StoryChoice {
-
+// The text describing what this choice does (e.g., "Fight the dragon")
     private String text;
-    private int points;
+    private int points; // Points awarded to the player for selecting this choice
 
     public StoryChoice(String text, int points) {
         this.text = text;

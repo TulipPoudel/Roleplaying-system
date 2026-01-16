@@ -9,11 +9,11 @@ import java.util.ArrayList;
  *
  * @author Lenovo
  */
-public class Story {
-    private String title;
-    private String intro;
-    private String difficulty;
-    private ArrayList<StoryChoice> choices;
+public class Story { 
+    private String title; // The story's title (e.g., "The Lost Kingdom")
+    private String intro; // The introduction text that sets up the story
+    private String difficulty; // Difficulty level: Easy, Medium, or Hard
+    private ArrayList<StoryChoice> choices;  // List of all choices available in this story
 
     public Story(String title, String intro, String difficulty) {
         this.title = title;

@@ -32,19 +32,19 @@ public class MainFrame extends javax.swing.JFrame {
     private GameController gameControl;
     
     
-    public MainFrame() {
+    public MainFrame() { // Initialize story, character, and game controllers
         initComponents();
-        storyControl = new StoryControl(jTable1);
+        storyControl = new StoryControl(jTable1); 
         characterControl = new CharacterControl();
         gameControl = new GameController();
-        loadCharactersToTable();
-        loadStoriesToComboBox();
+        loadCharactersToTable(); // Load all characters into the table display
+        loadStoriesToComboBox(); // Populate story dropdown with available stories
         
-        
+        // Set column headers for character table
         DefaultTableModel charModel = (DefaultTableModel) jTable2.getModel();
         charModel.setColumnIdentifiers(new Object[]{"Name", "Class", "Level"});
         
-        
+        // Set column headers for story table
         DefaultTableModel storyModel = (DefaultTableModel) jTable1.getModel();
         storyModel.setColumnIdentifiers(new Object[]{"Title","Premise","Difficulty"});
     }
@@ -60,15 +60,15 @@ public class MainFrame extends javax.swing.JFrame {
             storyComboBox.addItem(s.getTitle());
         }
     }
-    private void addScoreFromPoints(int points) {
+    private void addScoreFromPoints(int points) { // Add points to player's score and update progress bar
         gameControl.addScore(points);
         scoreProgressBar.setValue(gameControl.getScore());
     }
     
-    private void loadCharactersToTable() {
+    private void loadCharactersToTable() { // Refresh character table with current data
         DefaultTableModel model = (DefaultTableModel) jTable2.getModel();
         model.setRowCount(0);
-
+        // Add each character as a new row
         for (GameCharacter c : characterControl.getCharacters()) {
             model.addRow(new Object[]{
                 c.getName(),
@@ -77,7 +77,7 @@ public class MainFrame extends javax.swing.JFrame {
             });
         }
     }
-    
+    // Load next three story choices from queue
     private void loadNextChoices() {
 
         StoryChoice c1 = gameControl.nextChoice();
@@ -89,12 +89,12 @@ public class MainFrame extends javax.swing.JFrame {
         setupChoiceButton(choice2Button, c2);
         setupChoiceButton(choice3Button, c3);
 
-        
+        // End game if no choices remain
         if (c1 == null && c2 == null && c3 == null) {
             gameControl.finishGame();
         }
     }
-    
+    // Configure button with choice text and data
     private void setupChoiceButton(JButton button, StoryChoice choice) {
         if (choice == null) {
             button.setVisible(false);        
@@ -105,22 +105,22 @@ public class MainFrame extends javax.swing.JFrame {
             button.putClientProperty("choice", choice); 
         }
     }
-    
+    // Process player's choice selection
     private void handleChoice(JButton button) {
         StoryChoice choice = (StoryChoice) button.getClientProperty("choice");
 
         if (choice == null) return;
 
-        
+        // Apply choice effects to character
         gameControl.applyChoice(choice);
         scoreProgressBar.setValue(gameControl.getScore());
 
-        
+        // Display choice feedback in story area
         storyTextArea.append("\n\nYou chose: " + choice.getText() +
                              " (+" + choice.getPoints() + " points)");
 
         
-        loadNextChoices();
+        loadNextChoices(); // Load next set of choices
     }
 
     /**
